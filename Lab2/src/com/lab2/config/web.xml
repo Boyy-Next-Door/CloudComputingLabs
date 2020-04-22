@@ -18,6 +18,17 @@
         <type-mapping ext="gif" type="image/gif"/>
     </type-mappings>
 
+    <!--servlet映射-->
+    <servlets>
+        <servlet>
+            <servlet-url method="post">login.do</servlet-url>
+            <servlet-class>com.lab2.web.LoginServlet</servlet-class>
+        </servlet>
+        <servlet>
+            <servlet-url method="get">login.do</servlet-url>
+            <servlet-class>com.lab2.web.LoginServlet</servlet-class>
+        </servlet>
+    </servlets>
 </server>
 
 

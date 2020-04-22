@@ -4,6 +4,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import javax.xml.transform.Source;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +17,20 @@ public class ServerContext {
     private static String WebRoot;
     private static String NotFoundPage;
 
+    static{
+        //静态代码块进行初始化
+        System.out.println("initializing ServerContext...");
+        init();
+    }
+
     //从xml中读入配置信息
-    private static void init() {
+    public static void init() {
         Types = new HashMap<String, String>();
         try {
             SAXReader reader = new SAXReader();
-            Document doc = reader.read("config/web.xml");
+//            System.out.println(System.getProperty("user.dir"));
+            Document doc = reader.read("src/com/lab2/config/web.xml");
+
             Element root = doc.getRootElement();
 
             Element service = root.element("service");
@@ -42,7 +51,6 @@ public class ServerContext {
             e.printStackTrace();
         }
     }
-
 
     public static Map<String, String> getTypes() {
         return Types;

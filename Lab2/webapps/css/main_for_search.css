@@ -1,0 +1,108 @@
+body{
+    margin: 0;
+    padding: 0;
+    background: #e74c3c;
+}
+
+.search-box{
+    /* 绝对定位 水平垂直居中 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: #2f3640;
+    border-radius: 40px;
+    padding: 20px;
+
+    /* 搜索盒子中元素居中 */
+    align-items: center;
+
+    /* 盒子初始宽高 40px  正好包裹内部的.search-btn*/
+    height: 40px;
+    width: 40px;
+
+    /* 宽度变化贝塞尔曲线 */
+    transition:width  cubic-bezier(0.68, -0.25, 0.27, 1.55)  .8s;
+
+    box-shadow: 0 15px 20px rgba(0,0,0,.8);
+}
+.search-btn{
+    color: #e84118;
+    /* 固定定位 */
+    position: fixed;
+    /* 放在search-box的右边20px处*/
+    right: 20px;
+
+    /* 其内部的搜索突变flex布局 会保持在中央*/
+    display: flex;
+    justify-content: center;
+    /* 少了这个就不能垂直居中了  */
+    align-items: center;    
+
+    /* btn的大小 */
+    width: 40px;
+    height: 40px;
+
+    /* 圆形边缘 */
+    border-radius: 50%;
+    background: #2f3640;
+    border-bottom: none;
+}
+
+/* 设置<a>中嵌套icon的大小和<a>一致 */
+.search-icon{
+    width: 40px;
+    height: 40px;
+}
+
+/* 设置输入框 */
+.search-text{
+    /* 设置左浮动 所以会跟在外面的search-box的左侧移动 */
+    float: left;
+    padding: 0;
+    line-height: 40px;
+    max-inline-size: 200px;
+    
+    /* 初始宽度为0 整个search-box的大小为40px*40px */
+    width: 0px; 
+
+    /* 去除默认输入框的背景、描边、边框 */
+    background: none;
+    outline: none;
+    border: none;
+
+    /* 添加白色下划线 */
+    border-bottom: #bdc3c7 2px solid;
+
+
+    /* 字体颜色、大小 */
+    color: white;
+    font-size: 16px;
+
+    /* 过度动画 和search-box一致*/
+    transition:width  cubic-bezier(0.68, -0.25, 0.27, 1.55)  .8s;
+}
+
+
+/* 鼠标移动到search-box上的动画 */
+
+/* 首先是search-box变长 其实可以不设置其width属性 由内部的search-text和search-btn撑开
+    但是在浏览器放大到一定比例时，会出现search-btn被挤到另一行的现象
+    所以还是设置一下search-box的长度
+*/
+.search-box:hover {
+    width: 240px;
+}
+
+/* 设置search-text的宽度 */
+.search-box:hover > .search-text{
+    width: 200px; 
+}
+/* search-btn背景颜色变化 */
+.search-box:hover > .search-btn{
+    background: #bdc3c7;
+}
+
+
+
+

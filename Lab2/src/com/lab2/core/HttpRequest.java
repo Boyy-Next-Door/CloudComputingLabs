@@ -1,6 +1,7 @@
 package com.lab2.core;
  
-import com.lab2.model.ParsingParameterException;
+import com.lab2.Exceptions.ParsingParameterException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +38,11 @@ public class HttpRequest {
 		//读取请求行
 		String line = buffer.readLine();
 		if (line != null && line.length() > 0) {
+			//TODO 将url进行解码 这样可以保证GET请求中的中文参数无乱码
+			String output = java.net.URLDecoder.decode(line, "UTF-8");
+			System.out.println(output);
 			//HTTP协议请求行 请求方法 【空格】 URI 【空格】 协议版本 【回车符\r】【换行符\n】
-			String[] temp = line.split("\\s");
+			String[] temp = output.split("\\s");
 			this.method = temp[0];
 			this.uri = temp[1];
 			//uri中携带了参数 应该是GET、PUT之类的请求
@@ -108,6 +112,11 @@ public class HttpRequest {
 	 * @param isPost
 	 */
 	private void parseParameter(String str, boolean isPost) throws ParsingParameterException {
+		System.out.println(str);
+		//为空串
+		if(str==null||str.length()==0){
+			return;
+		}
 		//将参数字符串按照&分割
 		String[] arr = str.split("&");
 		for (String s : arr) {
@@ -131,5 +140,59 @@ public class HttpRequest {
 		}
 	}
 
+	public String getUri() {
+		return uri;
+	}
 
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public Map<String, String> getHeader() {
+		return Header;
+	}
+
+	public void setHeader(Map<String, String> header) {
+		Header = header;
+	}
+
+	public Map<String, String> getQueryString() {
+		return QueryString;
+	}
+
+	public void setQueryString(Map<String, String> queryString) {
+		QueryString = queryString;
+	}
+
+	public Map<String, String> getForm() {
+		return Form;
+	}
+
+	public void setForm(Map<String, String> form) {
+		Form = form;
+	}
+
+	public Map<String, String> getParameter() {
+		return Parameter;
+	}
+
+	public void setParameter(Map<String, String> parameter) {
+		Parameter = parameter;
+	}
 }
