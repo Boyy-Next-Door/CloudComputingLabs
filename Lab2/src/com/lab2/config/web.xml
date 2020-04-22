@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server>
+    <service>
+        <connector port="23333" protocol="HTTP/1.1" max-thread="100"/>
+        <webroot>webapps</webroot>
+        <not-found-page>404.html</not-found-page>
+    </service>
+    <type-mappings>
+        <!--一般静态资源类型-->
+        <type-mapping ext="html" type="text/html;charset=UTF-8"/>
+        <type-mapping ext="css" type="text/css;charset=UTF-8"/>
+        <type-mapping ext="js" type="application/javascript;charset=UTF-8"/>
+        <type-mapping ext="json" type="application/json;charset=UTF-8"/>
+
+        <!--图片类型-->
+        <type-mapping ext="jpg" type="image/jpeg"/>
+        <type-mapping ext="png" type="image/png"/>
+        <type-mapping ext="gif" type="image/gif"/>
+    </type-mappings>
+
+</server>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">-->
+<!--&lt;!&ndash;    <display-name>WEB_20_CRUD</display-name>&ndash;&gt;-->
+<!--&lt;!&ndash;    <welcome-file-list>&ndash;&gt;-->
+<!--&lt;!&ndash;        <welcome-file>index.html</welcome-file>&ndash;&gt;-->
+<!--&lt;!&ndash;        <welcome-file>index.htm</welcome-file>&ndash;&gt;-->
+<!--&lt;!&ndash;        <welcome-file>index.jsp</welcome-file>&ndash;&gt;-->
+<!--&lt;!&ndash;        <welcome-file>default.html</welcome-file>&ndash;&gt;-->
+<!--&lt;!&ndash;        <welcome-file>default.htm</welcome-file>&ndash;&gt;-->
+<!--&lt;!&ndash;        <welcome-file>default.jsp</welcome-file>&ndash;&gt;-->
+<!--&lt;!&ndash;    </welcome-file-list>&ndash;&gt;-->
+<!--    &lt;!&ndash; 自动登陆filter &ndash;&gt;-->
+<!-- -->
+<!--</web-app>-->
