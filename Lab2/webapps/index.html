@@ -15,7 +15,8 @@
         transform: translate(-50%,-50%);
 
         /*!* 整个登陆图层的宽度 *!*/
-        /*width: 400px;*/
+        /*width: 880px;*/
+        width:min-content;
 
         /* 登陆图层内部元素跟图层边框的四周距离 */
         padding: 40px;
@@ -33,12 +34,29 @@
         border-top-left-radius: 30px;
         border-bottom-right-radius: 30px;
     }
+    .innerimg{
+        /*!*width: auto;*!        自适应父级容器*/
+        /*height: auto;*!        自适应父级容器*/
+        width: 800px;
+    }
+    .body_bg{
+        /*background-image: url(img/bg.jpg);*/
+    }
 
 </style>
-<body>
+<body class="body_bg">
     <div class="box">
         <H1 align="center"> 一朵鲜花三根草🐂🍺！</H1>
-        <img src="img/team.jpg">
+        <img src="img/team.jpg" class="innerimg">
+        <p align="center">
+            杨佳政 201708010207<br />
+            巴琰雯 201708010211<br />
+            缴天朔 201708010301<br />
+            赵国强 201708010328<br />
+        </p>
+        <p align="center">GeorgeYang是组中最美的🌼姑娘^_^<br />
+        </p>
+        <hr>
     </div>
 
 </body>

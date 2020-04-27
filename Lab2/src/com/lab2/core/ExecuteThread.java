@@ -32,57 +32,62 @@ class ExecuteThread implements Runnable {
 
     // 请求处理逻辑
     private void execute() throws IOException, ClassNotFoundException {
-        InputStream in = socket.getInputStream();
-        OutputStream out = socket.getOutputStream();
-        HttpRequest req = null;
-        HttpResponse res = new HttpResponse(out);
+        int count = 0;
+        while (!socket.isClosed()) {
+//            System.out.println("count:" + count);
+            count++;
+            InputStream in = socket.getInputStream();
+            OutputStream out = socket.getOutputStream();
+            HttpRequest req = null;
+            HttpResponse res = new HttpResponse(out);
 
-        try {
-            req = new HttpRequest(in);
-        } catch (ParsingParameterException e) {
-            //TODO 返回内部错误响应
-            res.setStatus(HttpResponseStatusEnum.ERROR.getCode());
-            res.write("method not supported.");
-        }catch (MethodUnimplementedException e){
-            //请求方法未实现
-            res.write(new File(ServerContext.getWebRoot() + "/" + ServerContext.getMethodNotImplemented()));
-            return;
-        }
-
-        //POST请求
-        boolean isPost = "POST".equals(req.getMethod());
-
-        //把消息分为静态内容和动态内容
-        //--动态内容--
-        //是否为用户数据处理接口(动态内容)
-		if (ServletManager.isAction(req.getUri(), isPost)) {
-		    try{
-                ServletManager.doAction(req, res, req.getUri(), isPost);
-            }catch (MethodNotSupportException e){
-                //返回响应
+            try {
+                req = new HttpRequest(in);
+            } catch (ParsingParameterException e) {
+                //TODO 返回内部错误响应
                 res.setStatus(HttpResponseStatusEnum.ERROR.getCode());
                 res.write("method not supported.");
+            } catch (MethodUnimplementedException e) {
+                //请求方法未实现
+                res.write(new File(ServerContext.getWebRoot() + "/" + ServerContext.getMethodNotImplemented()));
+                return;
             }
-			return;
-		}
 
-        //--静态内容--
-        //获取请求类型
-        String type = req.getUri().substring(req.getUri().lastIndexOf(".") + 1);
-        //设置响应头属性
-        res.addHeaderAttribute("Content-Type", ServerContext.getTypes().get(type));
-        //获取静态文件
-        File file = new File(ServerContext.getWebRoot() + req.getUri());
+            //POST请求
+            boolean isPost = "POST".equals(req.getMethod());
 
-        if (!file.exists()) {
-            //404 请求内容找不到
-            res.setStatus(404);
-            file = new File(ServerContext.getWebRoot() + "/" + ServerContext.getNotFoundPage());
-        } else {
-            res.setStatus(200);
+            //把消息分为静态内容和动态内容
+            //--动态内容--
+            //是否为用户数据处理接口(动态内容)
+            if (ServletManager.isAction(req.getUri(), isPost)) {
+                try {
+                    ServletManager.doAction(req, res, req.getUri(), isPost);
+                } catch (MethodNotSupportException e) {
+                    //返回响应
+                    res.setStatus(HttpResponseStatusEnum.ERROR.getCode());
+                    res.write("method not supported.");
+                }
+                return;
+            }
+
+            //--静态内容--
+            //获取请求类型
+            String type = req.getUri().substring(req.getUri().lastIndexOf(".") + 1);
+            //设置响应头属性
+            res.addHeaderAttribute("Content-Type", ServerContext.getTypes().get(type));
+            //获取静态文件
+            File file = new File(ServerContext.getWebRoot() + req.getUri());
+
+            if (!file.exists()) {
+                //404 请求内容找不到
+                res.setStatus(404);
+                file = new File(ServerContext.getWebRoot() + "/" + ServerContext.getNotFoundPage());
+            } else {
+                res.setStatus(200);
+            }
+            //响应静态内容
+            res.write(file);
         }
-        //响应静态内容
-        res.write(file);
     }
 
 

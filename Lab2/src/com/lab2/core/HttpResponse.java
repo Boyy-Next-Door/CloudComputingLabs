@@ -1,6 +1,7 @@
 package com.lab2.core;
 import java.awt.datatransfer.StringSelection;
 import java.io.*;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -26,6 +27,7 @@ public class HttpResponse {
         Header.put("Content-Type", "text/plain;charset=utf-8");
         Header.put("Date", new Date().toString());
         Header.put("Server","oneFlower&threeGrass' web server");
+        Header.put("Connection","keep-alive");
         status = HttpResponseStatusEnum.OK.getCode();
     }
 
@@ -51,7 +53,8 @@ public class HttpResponse {
 		out.flush();
 		//释放资源
 		bis.close();
-		out.close();
+		//这是socket中的输出流  不能直接关掉  一关掉socket也关掉了
+//		out.close();
 	}
 
 	/**
@@ -64,7 +67,8 @@ public class HttpResponse {
 		printHeader(ps);
 		//回写message
 		ps.println(message);
-		ps.close();
+		ps.flush();
+//		ps.close();
 	}
 	/**
 	 * 打印头信息
