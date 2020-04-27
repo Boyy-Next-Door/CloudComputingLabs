@@ -2,6 +2,8 @@ package com.lab2.core;
 
 
 import com.lab2.utils.LoggerUtil;
+import jdk.internal.instrumentation.Logger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,7 +19,7 @@ public class MyServer {
         HashMap<String, String> params = parseParameter(args);
         //参数解析错误
         if(params==null){
-			LoggerUtil.error("parameter error");
+			LoggerUtil.LOGGER.severe("\t\t"+"parameter error"+"\n");
         	System.exit(1);
 		}
         String ip = "";		//这个参数不知道用在哪里 默认创建的socket 对应的就是本机ip 使用127.0.0.1可以访问到
@@ -47,7 +49,7 @@ public class MyServer {
         while (true) {
             // 接收到一个TCP连接请求 丢给服务端业务线程处理
             Socket accept = ss.accept();
-			LoggerUtil.info(accept.getInetAddress().getHostAddress() + " " + accept.getPort() + "创建tcp连接");
+            LoggerUtil.LOGGER.info("\t\t"+accept.getInetAddress().getHostAddress() + " " + accept.getPort() + "创建tcp连接"+"\n");
             // 给线程池分发一个新任务
             cachedThreadPool.execute(new ExecuteThread(accept));
         }
@@ -77,7 +79,7 @@ public class MyServer {
     // 初始化ServerSocket对象
     private static ServerSocket initSocket(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
-        LoggerUtil.info("服务器开启: " + serverSocket.getInetAddress().getHostAddress() + ": " + serverSocket.getLocalPort());
+        LoggerUtil.LOGGER.info("\t\t"+"服务器开启: " + serverSocket.getInetAddress().getHostAddress() + ": " + serverSocket.getLocalPort()+"\n");
         return serverSocket;
     }
 

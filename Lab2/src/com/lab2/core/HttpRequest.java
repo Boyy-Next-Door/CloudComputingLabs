@@ -41,7 +41,7 @@ public class HttpRequest {
 		if (line != null && line.length() > 0) {
 			//TODO 将url进行解码 这样可以保证GET请求中的中文参数无乱码
 			String output = java.net.URLDecoder.decode(line, "UTF-8");
-			LoggerUtil.info(output);
+			LoggerUtil.LOGGER.info("\t\t"+output+"\n");
 			//HTTP协议请求行 请求方法 【空格】 URI 【空格】 协议版本 【回车符\r】【换行符\n】
 			String[] temp = output.split("\\s");
 			this.method = temp[0];
