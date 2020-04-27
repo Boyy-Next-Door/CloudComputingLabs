@@ -29,7 +29,6 @@ public class HttpResponse {
         Header.put("Content-Type", "text/plain;charset=utf-8");
         Header.put("Date", new Date().toString());
         Header.put("Server","oneFlower&threeGrass' web server");
-        Header.put("Connection","keep-alive");
         status = HttpResponseStatusEnum.OK.getCode();
     }
 
@@ -56,7 +55,7 @@ public class HttpResponse {
 		//释放资源
 		bis.close();
 		//这是socket中的输出流  不能直接关掉  一关掉socket也关掉了
-//		out.close();
+		out.close();
 	}
 
 	/**
@@ -70,7 +69,7 @@ public class HttpResponse {
 		//回写message
 		ps.println(message);
 		ps.flush();
-//		ps.close();
+		ps.close();
 	}
 	/**
 	 * 打印头信息

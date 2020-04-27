@@ -40,7 +40,7 @@ public class HttpRequest {
 
 	private boolean analysis(InputStream in) throws IOException, ParsingParameterException {
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
-
+//		System.out.println(in.available());
 		//读取请求行
 		String line = buffer.readLine();
 		if (line != null && line.length() > 0) {

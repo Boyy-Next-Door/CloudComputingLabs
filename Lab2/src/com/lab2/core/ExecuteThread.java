@@ -32,21 +32,35 @@ class ExecuteThread implements Runnable {
 
     // 请求处理逻辑
     private void execute() throws IOException, ClassNotFoundException {
-        int count = 0;
-        while (!socket.isClosed()) {
-//            System.out.println("count:" + count);
-            count++;
+        boolean isKeepAlive = true;
+        //只对长连接自旋
+//        int i =0;
+        while (!socket.isClosed() && isKeepAlive) {
+//            System.out.println(i++);
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
             HttpRequest req = null;
             HttpResponse res = new HttpResponse(out);
 
             try {
+//                System.out.println("试图创建request");
                 req = new HttpRequest(in);
+//                System.out.println("创建request成功");
                 //检查request是否指定长连接
                 if(req.getParameter().containsKey("Connection")){
                     String connection = req.getParameter().get("Connection");
-
+                    //指定长连接
+                    if("KEEP-ALIVE".equals(connection.toUpperCase())){
+                        res.getHeader().put("Connection","keep-alive");
+                        isKeepAlive=true;
+                    }else{
+                        //短连接
+                        res.getHeader().put("Connection","closed");
+                        isKeepAlive=false;
+                    }
+                }else{
+                    //没有指定长连接  默认短连接
+                    isKeepAlive=false;
                 }
             } catch (ParsingParameterException e) {
                 //TODO 返回内部错误响应
