@@ -23,6 +23,8 @@ public class LoggerUtil {
      **/
     private static String file_name = "log";
 
+    private static Logger LOGGER = Logger.getLogger("server logger");
+
     /**
      * 得到要记录的日志的路径及文件名称
      *
@@ -93,5 +95,13 @@ public class LoggerUtil {
             e.printStackTrace();
         }
 
+    }
+
+    public static void info(String s) {
+        LOGGER.info("\t\t"+s+"\n");
+    }
+
+    public static void error(String s) {
+        LOGGER.severe("\t\t"+s+"\n");
     }
 }

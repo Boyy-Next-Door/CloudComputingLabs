@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <server>
     <service>
-        <connector port="23333" protocol="HTTP/1.1" max-thread="100"/>
+        <connector port="8888" protocol="HTTP/1.1" max-thread="99999999"/>
         <webroot>webapps</webroot>
         <not-found-page>404.html</not-found-page>
     </service>
