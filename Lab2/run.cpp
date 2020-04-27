@@ -5,7 +5,7 @@ using namespace std;
 
 
 int main(int argc, char* argv[]){
-    string path="/home/jts/Desktop/Lab2/run.sh";
+    string path="run.sh";
     string s="sh "+path+" ";
    
     for(int i=1; argv[i]!=NULL ; i++){

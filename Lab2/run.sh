@@ -1,7 +1,7 @@
 #!/bin/sh
 
  
-JAR_PATH=/home/jts/Desktop/Lab2/out/artifacts/Lab2_jar/Lab2.jar
+JAR_PATH=Lab2.jar
 
 #    $1  ip
 #    $2  port
@@ -12,6 +12,8 @@ JAR_PATH=/home/jts/Desktop/Lab2/out/artifacts/Lab2_jar/Lab2.jar
 #     exit 1
 #fi
  
-java -jar $JAR_PATH 
- 
+java -jar $JAR_PATH $1 $2 $3 $4 $5 $6
+
+#echo "java -jar $JAR_PATH $1 $2 $3 $4 $5 $6";
+
 exit $?
