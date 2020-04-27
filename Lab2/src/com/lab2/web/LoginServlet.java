@@ -10,10 +10,13 @@ public class LoginServlet implements BaseServlet {
     @Override
     public void doPost(HttpRequest req, HttpResponse res) {
         LoggerUtil.LOGGER.info("哈哈哈哈哈哈哈我是LoginServlet的post请求\n");
+        res.write("ok");
     }
 
     @Override
     public void doGet(HttpRequest req, HttpResponse res) {
         LoggerUtil.LOGGER.info("奥里给我是LoginServlet的get请求");
+        res.write("ok");
+
     }
 }
