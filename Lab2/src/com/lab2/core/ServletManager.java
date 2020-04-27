@@ -62,6 +62,7 @@ public class ServletManager {
                 //获取对应GET请求的url的servlet-class类名
                 target = GetMethod.get(methodurl);
             }
+
             if(target==null){
                 throw new MethodNotSupportException();
             }
@@ -86,12 +87,13 @@ public class ServletManager {
                 res.write(e.toString());
             }
         }
-        //返回响应
-        res.write("ok");
+        //POST请求暂定为接口请求 所以response由servlet的逻辑执行  这里不再write
+        //由于write中关闭了输出流 这里再次write会导致回写的响应体不全
+//        res.write("ok");
     }
 
     //根据url判断是否为servlet请求 暂时约定servlet以.do结尾
     public static boolean isAction(String uri, boolean isPost) {
-        return uri.endsWith(".do");
+        return uri.endsWith(".do")||uri.endsWith("_show");
     }
 }

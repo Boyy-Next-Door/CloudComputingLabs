@@ -1,6 +1,7 @@
 package com.lab2.core;
 
 import com.lab2.Exceptions.MethodNotSupportException;
+import com.lab2.Exceptions.MethodUnimplementedException;
 import com.lab2.Exceptions.ParsingParameterException;
 
 import java.io.*;
@@ -34,16 +35,22 @@ class ExecuteThread implements Runnable {
         InputStream in = socket.getInputStream();
         OutputStream out = socket.getOutputStream();
         HttpRequest req = null;
+        HttpResponse res = new HttpResponse(out);
+
         try {
             req = new HttpRequest(in);
         } catch (ParsingParameterException e) {
             //TODO 返回内部错误响应
-            e.printStackTrace();
+            res.setStatus(HttpResponseStatusEnum.ERROR.getCode());
+            res.write("method not supported.");
+        }catch (MethodUnimplementedException e){
+            //请求方法未实现
+            res.write(new File(ServerContext.getWebRoot() + "/" + ServerContext.getMethodNotImplemented()));
+            return;
         }
 
         //POST请求
         boolean isPost = "POST".equals(req.getMethod());
-        HttpResponse res = new HttpResponse(out);
 
         //把消息分为静态内容和动态内容
         //--动态内容--

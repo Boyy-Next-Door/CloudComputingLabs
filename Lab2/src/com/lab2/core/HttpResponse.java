@@ -25,6 +25,7 @@ public class HttpResponse {
 
         Header.put("Content-Type", "text/plain;charset=utf-8");
         Header.put("Date", new Date().toString());
+        Header.put("Server","oneFlower&threeGrass' web server");
         status = HttpResponseStatusEnum.OK.getCode();
     }
 
@@ -56,8 +57,8 @@ public class HttpResponse {
 	/**
 	 * 响应方法，发送字符串
 	 */
-	public void write(String message) throws IOException {
-		Header.put("Content-Length", message!=null?String.valueOf(message.length()):"0");
+	public void write(String message) {
+		Header.put("Content-Length", message!=null?String.valueOf(message.getBytes(Charset.forName("utf8")).length):"0");
 		PrintStream ps = new PrintStream(out);
 		//回写响应头
 		printHeader(ps);

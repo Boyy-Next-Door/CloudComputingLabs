@@ -16,6 +16,7 @@ public class ServerContext {
     private static int MaxThread;
     private static String WebRoot;
     private static String NotFoundPage;
+    private static String MethodNotImplemented;
 
     static{
         //静态代码块进行初始化
@@ -40,6 +41,7 @@ public class ServerContext {
             MaxThread = Integer.parseInt(connector.attributeValue("max-thread"));
             WebRoot = service.elementText("webroot");
             NotFoundPage = service.elementText("not-found-page");
+            MethodNotImplemented = service.elementText("method-not-implemented-page");
 
             @SuppressWarnings("unchecked")
             List<Element> typeMappings = root.element("type-mappings").elements("type-mapping");
@@ -100,4 +102,11 @@ public class ServerContext {
         NotFoundPage = notFoundPage;
     }
 
+    public static String getMethodNotImplemented() {
+        return MethodNotImplemented;
+    }
+
+    public static void setMethodNotImplemented(String methodNotImplemented) {
+        MethodNotImplemented = methodNotImplemented;
+    }
 }

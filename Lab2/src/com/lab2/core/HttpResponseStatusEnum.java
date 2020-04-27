@@ -4,7 +4,8 @@ package com.lab2.core;
 public enum HttpResponseStatusEnum {
     OK("OK", 200),
     NOT_FOUND("Not Found", 404),
-    ERROR("Internal Server Error", 500);
+    ERROR("Internal Server Error", 500),
+    NOT_IMPLEMENTED("Not Implemented",501);
 
     private String describe;
 

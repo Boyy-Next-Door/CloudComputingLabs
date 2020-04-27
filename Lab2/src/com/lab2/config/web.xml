@@ -4,6 +4,7 @@
         <connector port="8888" protocol="HTTP/1.1" max-thread="99999999"/>
         <webroot>webapps</webroot>
         <not-found-page>404.html</not-found-page>
+        <method-not-implemented-page>501.html</method-not-implemented-page>
     </service>
     <type-mappings>
         <!--一般静态资源类型-->
@@ -27,6 +28,10 @@
         <servlet>
             <servlet-url method="get">login.do</servlet-url>
             <servlet-class>com.lab2.web.LoginServlet</servlet-class>
+        </servlet>
+        <servlet>
+            <servlet-url method="post">Post_show</servlet-url>
+            <servlet-class>com.lab2.web.PostShowServlet</servlet-class>
         </servlet>
     </servlets>
 </server>

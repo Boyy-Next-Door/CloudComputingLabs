@@ -1,5 +1,6 @@
 package com.lab2.core;
  
+import com.lab2.Exceptions.MethodUnimplementedException;
 import com.lab2.Exceptions.ParsingParameterException;
 import com.lab2.utils.LoggerUtil;
 
@@ -23,17 +24,21 @@ public class HttpRequest {
 	private Map<String,String> Form;
 	private Map<String,String> Parameter;
 
-	public HttpRequest(InputStream in) throws IOException, ParsingParameterException {
+	public HttpRequest(InputStream in) throws IOException, ParsingParameterException, MethodUnimplementedException {
 		//初始化参数集合
 		Header=new HashMap<>();
 		QueryString=new HashMap<>();
 		Form=new HashMap<>();
 		Parameter=new HashMap<>();
 		//从tcp数据段读取HTTP请求的各项参数
-		analysis(in);
+		boolean isAnalysisSuccess = analysis(in);
+		//不支持的请求类型
+		if(!isAnalysisSuccess){
+			throw new MethodUnimplementedException("请求方式不支持");
+		}
 	}
 
-	private void analysis(InputStream in) throws IOException, ParsingParameterException {
+	private boolean analysis(InputStream in) throws IOException, ParsingParameterException {
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
 
 		//读取请求行
@@ -44,7 +49,13 @@ public class HttpRequest {
 			LoggerUtil.LOGGER.info("\t\t"+output+"\n");
 			//HTTP协议请求行 请求方法 【空格】 URI 【空格】 协议版本 【回车符\r】【换行符\n】
 			String[] temp = output.split("\\s");
-			this.method = temp[0];
+			this.method = temp[0].toUpperCase();
+
+			//暂时只实现POST和GET请求
+			if(!method.equals("POST")&&!method.equals("GET")){
+				return false;
+			}
+
 			this.uri = temp[1];
 			//uri中携带了参数 应该是GET、PUT之类的请求
 			if (this.uri.indexOf("?") != -1) {
@@ -102,9 +113,10 @@ public class HttpRequest {
 		if (method != null && method.toUpperCase().equals("POST")) {
 			char[] bys = new char[len];
 			buffer.read(bys);
-			String paraStr = new String(bys);
+			String paraStr = new String(bys).trim();
 			parseParameter(paraStr, true);
 		}
+		return true;
 	}
 
 	/**
