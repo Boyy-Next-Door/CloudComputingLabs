@@ -23,6 +23,8 @@ public class HttpResponse {
         Status.put(HttpResponseStatusEnum.OK.getCode(), HttpResponseStatusEnum.OK.getDescribe());
         Status.put(HttpResponseStatusEnum.NOT_FOUND.getCode(), HttpResponseStatusEnum.NOT_FOUND.getDescribe());
         Status.put(HttpResponseStatusEnum.ERROR.getCode(), HttpResponseStatusEnum.ERROR.getDescribe());
+        Status.put(HttpResponseStatusEnum.NOT_IMPLEMENTED.getCode(), HttpResponseStatusEnum.NOT_IMPLEMENTED.getDescribe());
+
 
         Header.put("Content-Type", "text/plain;charset=utf-8");
         Header.put("Date", new Date().toString());

@@ -43,12 +43,18 @@ class ExecuteThread implements Runnable {
 
             try {
                 req = new HttpRequest(in);
+                //检查request是否指定长连接
+                if(req.getParameter().containsKey("Connection")){
+                    String connection = req.getParameter().get("Connection");
+
+                }
             } catch (ParsingParameterException e) {
                 //TODO 返回内部错误响应
                 res.setStatus(HttpResponseStatusEnum.ERROR.getCode());
                 res.write("method not supported.");
             } catch (MethodUnimplementedException e) {
                 //请求方法未实现
+                res.setStatus(HttpResponseStatusEnum.NOT_IMPLEMENTED.getCode());
                 res.write(new File(ServerContext.getWebRoot() + "/" + ServerContext.getMethodNotImplemented()));
                 return;
             }
