@@ -1,5 +1,6 @@
 package com.lab2.core;
 
+import com.lab2.Exceptions.AliveConnectionClosedException;
 import com.lab2.Exceptions.MethodNotSupportException;
 import com.lab2.Exceptions.MethodUnimplementedException;
 import com.lab2.Exceptions.ParsingParameterException;
@@ -34,21 +35,24 @@ class ExecuteThread implements Runnable {
     private void execute() throws IOException, ClassNotFoundException {
         boolean isKeepAlive = true;
         //只对长连接自旋
-//        int i =0;
         while (!socket.isClosed() && isKeepAlive) {
-//            System.out.println(i++);
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
             HttpRequest req = null;
             HttpResponse res = new HttpResponse(out);
 
             try {
-//                System.out.println("试图创建request");
+                //这里会抛很多种异常 分别catch
                 req = new HttpRequest(in);
-//                System.out.println("创建request成功");
+                //这里面会阻塞在inputStream.readLine()上读请求行 如果浏览器刷新会立刻关闭http连接 从而断开socket
+                //而如果断开，readLine()会读到一个空串 于是在analyze()里面会去读请求头
+                //这就是之前浏览器访问图片 一次成功 第二次刷新后台就抛一个空指针并且创建新的socket获取的原因
+                //于是需要在analyze里进行修改  当请求行处读到一个空行 就说明没有正确读入请求行
+                //这就是上述的长连接被客户端提前断开的情况
+
                 //检查request是否指定长连接
-                if(req.getParameter().containsKey("Connection")){
-                    String connection = req.getParameter().get("Connection");
+                if(req.getHeader().containsKey("Connection")){
+                    String connection = req.getHeader().get("Connection");
                     //指定长连接
                     if("KEEP-ALIVE".equals(connection.toUpperCase())){
                         res.getHeader().put("Connection","keep-alive");
@@ -65,11 +69,15 @@ class ExecuteThread implements Runnable {
             } catch (ParsingParameterException e) {
                 //TODO 返回内部错误响应
                 res.setStatus(HttpResponseStatusEnum.ERROR.getCode());
-                res.write("method not supported.");
+                res.write("请求头参数格式错误");
+                return;
             } catch (MethodUnimplementedException e) {
                 //请求方法未实现
                 res.setStatus(HttpResponseStatusEnum.NOT_IMPLEMENTED.getCode());
                 res.write(new File(ServerContext.getWebRoot() + "/" + ServerContext.getMethodNotImplemented()));
+                return;
+            }catch (AliveConnectionClosedException e) {
+                //长连接被中断 不再响应客户端 直接结束当前线程
                 return;
             }
 
@@ -107,6 +115,7 @@ class ExecuteThread implements Runnable {
             }
             //响应静态内容
             res.write(file);
+
         }
     }
 

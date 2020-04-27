@@ -1,5 +1,6 @@
 package com.lab2.core;
  
+import com.lab2.Exceptions.AliveConnectionClosedException;
 import com.lab2.Exceptions.MethodUnimplementedException;
 import com.lab2.Exceptions.ParsingParameterException;
 import com.lab2.utils.LoggerUtil;
@@ -24,21 +25,17 @@ public class HttpRequest {
 	private Map<String,String> Form;
 	private Map<String,String> Parameter;
 
-	public HttpRequest(InputStream in) throws IOException, ParsingParameterException, MethodUnimplementedException {
+	public HttpRequest(InputStream in) throws IOException, ParsingParameterException, MethodUnimplementedException, AliveConnectionClosedException {
 		//初始化参数集合
 		Header=new HashMap<>();
 		QueryString=new HashMap<>();
 		Form=new HashMap<>();
 		Parameter=new HashMap<>();
 		//从tcp数据段读取HTTP请求的各项参数
-		boolean isAnalysisSuccess = analysis(in);
-		//不支持的请求类型
-		if(!isAnalysisSuccess){
-			throw new MethodUnimplementedException("请求方式不支持");
-		}
+		analysis(in);
 	}
 
-	private boolean analysis(InputStream in) throws IOException, ParsingParameterException {
+	private void analysis(InputStream in) throws IOException, ParsingParameterException, AliveConnectionClosedException, MethodUnimplementedException {
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
 //		System.out.println(in.available());
 		//读取请求行
@@ -53,7 +50,7 @@ public class HttpRequest {
 
 			//暂时只实现POST和GET请求
 			if(!method.equals("POST")&&!method.equals("GET")){
-				return false;
+				throw new MethodUnimplementedException("请求方式不支持");
 			}
 
 			this.uri = temp[1];
@@ -72,6 +69,9 @@ public class HttpRequest {
 			}
 			//记录请求协议版本
 			this.protocol = temp[2];
+		}else{
+			//没有读到请求行 认为本http连接被中断
+			throw new AliveConnectionClosedException("长连接被客户端中断");
 		}
 
 		//读取请求头  HTTP协议请求头格式:
@@ -116,7 +116,6 @@ public class HttpRequest {
 			String paraStr = new String(bys).trim();
 			parseParameter(paraStr, true);
 		}
-		return true;
 	}
 
 	/**

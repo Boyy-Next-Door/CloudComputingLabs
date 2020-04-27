@@ -48,14 +48,14 @@ public class HttpResponse {
 		byte[] by = new byte[1024];
 		int len = 0;
 		while((len = bis.read(by)) != -1) {
-			out.write(Arrays.copyOf(by,len));
+			ps.write(Arrays.copyOf(by,len));
 		}
 
-		out.flush();
+		ps.flush();
 		//释放资源
 		bis.close();
 		//这是socket中的输出流  不能直接关掉  一关掉socket也关掉了
-		out.close();
+//		out.close();
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class HttpResponse {
 		//回写message
 		ps.println(message);
 		ps.flush();
-		ps.close();
+//		ps.close();
 	}
 	/**
 	 * 打印头信息
