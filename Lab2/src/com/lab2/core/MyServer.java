@@ -2,8 +2,6 @@ package com.lab2.core;
 
 
 import com.lab2.utils.LoggerUtil;
-import jdk.internal.instrumentation.Logger;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -49,7 +47,8 @@ public class MyServer {
         while (true) {
             // 接收到一个TCP连接请求 丢给服务端业务线程处理
             Socket accept = ss.accept();
-            LoggerUtil.LOGGER.info("\t\t"+accept.getInetAddress().getHostAddress() + " " + accept.getPort() + "创建tcp连接"+"\n");
+            LoggerUtil.LOGGER.info("\t\t"+accept.getInetAddress().getHostAddress() + " "
+                    + accept.getPort() + "创建tcp连接"+"\n");
             // 给线程池分发一个新任务
             cachedThreadPool.execute(new ExecuteThread(accept));
         }

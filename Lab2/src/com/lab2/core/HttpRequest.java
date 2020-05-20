@@ -25,7 +25,10 @@ public class HttpRequest {
 	private Map<String,String> Form;
 	private Map<String,String> Parameter;
 
-	public HttpRequest(InputStream in) throws IOException, ParsingParameterException, MethodUnimplementedException, AliveConnectionClosedException {
+	public HttpRequest(InputStream in) throws IOException,
+			ParsingParameterException, 	//请求报文参数格式错误
+				MethodUnimplementedException,	//请求method尚不支持
+				AliveConnectionClosedException {	//长连接被关闭
 		//初始化参数集合
 		Header=new HashMap<>();
 		QueryString=new HashMap<>();
@@ -37,7 +40,6 @@ public class HttpRequest {
 
 	private void analysis(InputStream in) throws IOException, ParsingParameterException, AliveConnectionClosedException, MethodUnimplementedException {
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
-//		System.out.println(in.available());
 		//读取请求行
 		String line = buffer.readLine();
 		if (line != null && line.length() > 0) {
@@ -124,7 +126,6 @@ public class HttpRequest {
 	 * @param isPost
 	 */
 	private void parseParameter(String str, boolean isPost) throws ParsingParameterException {
-//		System.out.println(str);
 		//为空串
 		if(str==null||str.length()==0){
 			return;

@@ -25,11 +25,6 @@ class ExecuteThread implements Runnable {
         this.clientPort = socket.getPort();
     }
 
-    private String getTimeStamp() {
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-        return simpleDateFormat.format(date);
-    }
 
     // 请求处理逻辑
     private void execute() throws IOException, ClassNotFoundException {
@@ -67,7 +62,6 @@ class ExecuteThread implements Runnable {
                     isKeepAlive=false;
                 }
             } catch (ParsingParameterException e) {
-                //TODO 返回内部错误响应
                 res.setStatus(HttpResponseStatusEnum.ERROR.getCode());
                 res.write("请求头参数格式错误");
                 return;
@@ -76,7 +70,7 @@ class ExecuteThread implements Runnable {
                 res.setStatus(HttpResponseStatusEnum.NOT_IMPLEMENTED.getCode());
                 res.write(new File(ServerContext.getWebRoot() + "/" + ServerContext.getMethodNotImplemented()));
                 return;
-            }catch (AliveConnectionClosedException e) {
+            } catch (AliveConnectionClosedException e) {
                 //长连接被中断 不再响应客户端 直接结束当前线程
                 return;
             }
