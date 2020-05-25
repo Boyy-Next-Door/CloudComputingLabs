@@ -10,6 +10,7 @@ import com.lab3.kvstore2pcsystem.utils.RespParseUtil;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,10 +65,10 @@ public class CoordinatorServer implements Runnable {
 
 /* 线程池中的具体任务线程类 */
 class ExecuteThread implements Runnable {
-    private Socket socket;
-    private String clientInfo;
-    private String clientIp;
-    private int clientPort;
+    private final Socket socket;
+    private final String clientInfo;
+    private final String clientIp;
+    private final int clientPort;
 
     // 构造传入socket实例
     public ExecuteThread(Socket s) {
@@ -107,7 +108,7 @@ class ExecuteThread implements Runnable {
                         break;
                     case GET:
                         //TODO 二阶段提交GET任务逻辑
-                        doGET();
+//                        doGET();
                         break;
                     case DEL:
                         //TODO 二阶段提交DEL任务逻辑
@@ -130,8 +131,39 @@ class ExecuteThread implements Runnable {
 
     }
 
-    private void doGET() {
-
+    private void doGET(RespRequest respRequest) {
+        ArrayList<Participant> participants;
+        //当list里还有节点存活时
+        while ((participants = NodeManager.getAliveParticipantList()).size() > 0) {
+            int min = Integer.MAX_VALUE;
+            Participant min_load_p = new Participant();
+            for (Participant p : participants) {
+                if (p.CNT < min) {
+                    min_load_p = p;
+                    min = p.CNT;
+                }
+            }
+            FutureTask<RespResponse> futureTask = new FutureTask<RespResponse>(
+                    new RequestToPrepareRunner(min_load_p, respRequest, "GET", ""));
+            try {
+                RespResponse respResponse = futureTask.get();
+                if (respResponse == null || respResponse.getResponseType() != RespResponse.GET_OK) {
+                    //如果有问题，就换个节点，除非所有节点都挂了
+                    if (NodeManager.getAliveParticipantList().size() == 0) {
+                        writeBack(respResponse);
+                        break;
+                    }
+                    continue;
+                }
+                //发送成功信息
+                writeBack(respResponse);
+                break;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void doSET(RespRequest respRequest) {
@@ -150,7 +182,6 @@ class ExecuteThread implements Runnable {
             futures.add(futureTask);
             executor.submit(futureTask);
         }
-
         boolean abort = false;
         try {
             //检查所有参与者的返回情况
@@ -271,7 +302,7 @@ class ExecuteThread implements Runnable {
             while (readCount < count) {
                 readCount += inputStream.read(bt, readCount, count - readCount);
             }
-            return new String(bt, "UTF-8");
+            return new String(bt, StandardCharsets.UTF_8);
         }
         return "";
     }
@@ -282,7 +313,7 @@ class ExecuteThread implements Runnable {
             OutputStream outputStream = socket.getOutputStream();
             String s = RespParseUtil.parseResponse(respResponse);
             System.out.println("response to " + clientInfo + ": " + s);
-            PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
+            PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), true);
             pWriter.println(s);
             pWriter.flush();
         } catch (IOException e) {
