@@ -41,7 +41,7 @@ public class RequestToPrepareRunner implements Callable<RespResponse> {
         String s = null;
         switch (command) {
             case "SET": {
-                s = HttpClientUtils.doPost("http://" + participant + ":8081/kvstore/set", stringStringHashMap);
+                s = HttpClientUtils.doPost("http://" + participant.getCo_addr() + ":" + participant.getIp() + "/kvstore/set", stringStringHashMap);
                 break;
             }
             case "GET": {

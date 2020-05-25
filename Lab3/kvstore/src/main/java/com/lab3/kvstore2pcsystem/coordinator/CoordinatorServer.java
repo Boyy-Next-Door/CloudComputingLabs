@@ -146,19 +146,54 @@ class ExecuteThread implements Runnable {
             futures.add(futureTask);
             executor.submit(futureTask);
         }
-        executor.shutdown();
 
+        boolean abort = false;
         try {
             //检查所有参与者的返回情况
             for (FutureTask<RespResponse> futureTask : futures) {
-                if (futureTask.get() != null) {
-                    //TODO 检查prepare-request的响应结果
+                RespResponse respResponse = futureTask.get();
+                // 检查prepare-request的响应结果
+                if (respResponse == null || respResponse.getResponseType() != RespResponse.SET_OK) {
+                    //SET的响应结果不是OK或者数据节点挂了 那么Abort这次任务
+                    abort = true;
+                    break;
                 }
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
+        //发送commit指令
+        if (abort) {
+            //SET指令回滚
+            futures = new ArrayList<>();
+            for (Participant p : participants) {
+                FutureTask<RespResponse> futureTask = new FutureTask<RespResponse>(
+                        new RequestToPrepareRunner(p, respRequest, "ROLLBACK", ""));
+                futures.add(futureTask);
+                executor.submit(futureTask);
+            }
+
+            boolean isDone = false;
+            try {
+                //检查所有参与者的返回情况
+                for (FutureTask<RespResponse> futureTask : futures) {
+                    RespResponse respResponse = futureTask.get();
+                    // 检查prepare-request的响应结果
+                    if (respResponse == null || respResponse.getResponseType() != RespResponse.SET_OK) {
+                        //SET的响应结果不是OK或者数据节点挂了 那么Abort这次任务
+                        abort = true;
+                        break;
+                    }
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        //释放线程池资源
+        executor.shutdown();
 
     }
 

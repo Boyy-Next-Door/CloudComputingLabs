@@ -3,6 +3,8 @@ package com.lab3.kvstore2pcsystem.coordinator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.tools.JavaCompiler;
+
 @Component
 public class Const {
 
@@ -12,6 +14,7 @@ public class Const {
     // 2、每隔30秒检查一遍数据节点列表
     public static int ALIVE_CHECK_INTERVAL = 30 * 1000;
 
+    //java -jar --xxx.config xxxx.jar
 
     public static int getPort() {
         return port;
