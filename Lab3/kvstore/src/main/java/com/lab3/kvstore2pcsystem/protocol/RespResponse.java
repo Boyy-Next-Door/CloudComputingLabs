@@ -10,7 +10,10 @@ public class RespResponse {
     public static int GET_OK = 202;           //GET成功
     public static int DEL_OK = 203;           //GET成功
     public static int ERROR = 204;           //发生错误
-    public static int DONE = 205;             //commit/rollback指令执行完成
+    public static int SET_COMMIT_DONE = 205;             // SET命令的commit指令执行完成
+    public static int SET_ROLLBACK_DONE = 206;           // SET命令的rollback指令执行完成
+    public static int DEL_COMMIT_DONE = 207;             // DEL命令的commit指令执行完成
+    public static int DEL_ROLLBACK_DONE = 208;           // DEL命令的rollback指令执行完成
 
     private String raw;                         //响应报文字符串
     private int responseType;                   //响应类型

@@ -175,22 +175,36 @@ class ExecuteThread implements Runnable {
             }
 
             boolean isDone = false;
+            RespResponse standardResponse = null; //从下面任取一个有效的response作为所有节点同一的返回内容
             try {
                 //检查所有参与者的返回情况
                 for (FutureTask<RespResponse> futureTask : futures) {
                     RespResponse respResponse = futureTask.get();
-                    // 检查prepare-request的响应结果
-                    if (respResponse == null || respResponse.getResponseType() != RespResponse.SET_OK) {
-                        //SET的响应结果不是OK或者数据节点挂了 那么Abort这次任务
-                        abort = true;
-                        break;
+                    // 检查commit的响应结果
+                    if (respResponse == null || respResponse.getResponseType() != RespResponse.SET_DONE) {
+                        //数据节点挂了 或者 响应状态不是SET_DONE（这种情况理论上来说不可能出现）直接无视
+                        continue;
+                    } else {
+                        //响应结果为SET_DONE
+                        //只要有一个节点DONE了 说明最终结果是done 要做的只是等待所有响应结果都确定下来（要么done 要么挂掉）
+                        isDone = true;
+                        //要是已经取过了就不变
+                        standardResponse = respResponse;
                     }
                 }
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
 
+            if (isDone) {
+                //SET回滚指令提交成功 给客户端返回RESP响应SET失败的报文
+                writeBack(standardResponse);
+            }
+
+        } else {
+            //SET指令提交
         }
+
 
         //释放线程池资源
         executor.shutdown();
@@ -222,13 +236,17 @@ class ExecuteThread implements Runnable {
     }
 
     // 向客户端回写响应
-    private void writeBack(RespResponse respResponse) throws IOException {
-        OutputStream outputStream = socket.getOutputStream();
-        String s = RespParseUtil.parseResponse(respResponse);
-        System.out.println("response to " + clientInfo + ": " + s);
-        PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
-        pWriter.println(s);
-        pWriter.flush();
+    private void writeBack(RespResponse respResponse) {
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            String s = RespParseUtil.parseResponse(respResponse);
+            System.out.println("response to " + clientInfo + ": " + s);
+            PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
+            pWriter.println(s);
+            pWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
