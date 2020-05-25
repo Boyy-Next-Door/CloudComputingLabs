@@ -113,4 +113,15 @@ public class RespRequest {
             this.code = code;
         }
     }
+
+    @Override
+    public String toString() {
+        return "RespRequest{" +
+                "raw='" + raw + '\'' +
+                ", requestType=" + requestType +
+                ", method='" + method + '\'' +
+                ", keys=" + keys +
+                ", values=" + values +
+                '}';
+    }
 }

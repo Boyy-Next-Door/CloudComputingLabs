@@ -1,45 +1,38 @@
-package TCP_chat_room.server;
+package com.lab3.kvstore2pcsystem.coordinator;
 
-import com.lab3.kvstore2pcsystem.coordinator.Const;
 import com.lab3.kvstore2pcsystem.protocol.RespRequest;
 import com.lab3.kvstore2pcsystem.protocol.RespResponse;
 import com.lab3.kvstore2pcsystem.utils.RespParseUtil;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.server.Skeleton;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class CoordinatorServer {
+public class CoordinatorServer implements Runnable {
     private static ExecutorService cachedThreadPool;
 
-    public static void main(String[] args) throws IOException {
+    //    public static void main(String[] args) throws IOException {
+    public void runServer() {
         // 初始化线程池
         initThreadPool();
-        // 创建服务器端Socket对象
-        ServerSocket ss = initSocket(Const.getPort());
-        // 监听客户端连接 返回一个Socket对象
-        while (true) {
-            // 接收到一个TCP连接请求 丢给服务端业务线程处理
-            Socket accept = ss.accept();
-            System.out.println(accept.getInetAddress().getHostAddress() + " " + accept.getPort() + "创建tcp连接");
-            // 给线程池分发一个新任务
-            cachedThreadPool.execute(new ExecuteThread(accept));
+        try {
+            // 创建服务器端Socket对象
+            ServerSocket ss = initSocket(Const.getPort());
+            // 监听客户端连接 返回一个Socket对象
+            while (true) {
+                // 接收到一个TCP连接请求 丢给服务端业务线程处理
+                Socket accept = ss.accept();
+                System.out.println(accept.getInetAddress().getHostAddress() + " " + accept.getPort() + "创建tcp连接");
+                // 给线程池分发一个新任务
+                cachedThreadPool.execute(new ExecuteThread(accept));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -54,6 +47,11 @@ public class CoordinatorServer {
     // 初始化线程池
     private static void initThreadPool() {
         cachedThreadPool = Executors.newCachedThreadPool();
+    }
+
+    @Override
+    public void run() {
+        runServer();
     }
 }
 
@@ -90,6 +88,7 @@ class ExecuteThread implements Runnable {
                 break;
             }
             RespRequest respRequest = RespParseUtil.parseRequest(readData);
+            System.out.println("试图从tcp连接中读取一个请求报文，解析结果："+respRequest);
             // ip和端口号在客户端打包封装请求的时候获取不到 需要服务器端建立tcp连接后才能确定
             if (respRequest != null) {
                 System.out.println("request: " + respRequest);
