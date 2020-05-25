@@ -181,14 +181,14 @@ class ExecuteThread implements Runnable {
                 for (FutureTask<RespResponse> futureTask : futures) {
                     RespResponse respResponse = futureTask.get();
                     // 检查commit的响应结果
-                    if (respResponse == null || respResponse.getResponseType() != RespResponse.SET_DONE) {
-                        //数据节点挂了 或者 响应状态不是SET_DONE（这种情况理论上来说不可能出现）直接无视
+                    if (respResponse == null || respResponse.getResponseType() != RespResponse.SET_ROLLBACK_DONE) {
+                        //数据节点挂了 或者 响应状态不是SET_ROLLBACK_DONE（这种情况理论上来说不可能出现）直接无视
                         continue;
                     } else {
-                        //响应结果为SET_DONE
+                        //响应结果为SET_ROLLBACK_DONE
                         //只要有一个节点DONE了 说明最终结果是done 要做的只是等待所有响应结果都确定下来（要么done 要么挂掉）
                         isDone = true;
-                        //要是已经取过了就不变
+                        //取最后一个有效的respResponse
                         standardResponse = respResponse;
                     }
                 }
@@ -199,16 +199,53 @@ class ExecuteThread implements Runnable {
             if (isDone) {
                 //SET回滚指令提交成功 给客户端返回RESP响应SET失败的报文
                 writeBack(standardResponse);
+            } else {
+                //子节点全都挂掉了 这种情况实验没要求  不做任何处理
+
             }
 
         } else {
             //SET指令提交
+            futures = new ArrayList<>();
+            for (Participant p : participants) {
+                FutureTask<RespResponse> futureTask = new FutureTask<RespResponse>(
+                        new RequestToPrepareRunner(p, respRequest, "COMMIT", ""));
+                futures.add(futureTask);
+                executor.submit(futureTask);
+            }
+
+            boolean isDone = false;
+            RespResponse standardResponse = null; //从下面任取一个有效的response作为所有节点同一的返回内容
+            try {
+                //检查所有参与者的返回情况
+                for (FutureTask<RespResponse> futureTask : futures) {
+                    RespResponse respResponse = futureTask.get();
+                    // 检查commit的响应结果
+                    if (respResponse == null || respResponse.getResponseType() != RespResponse.SET_COMMIT_DONE) {
+                        //数据节点挂了 或者 响应状态不是SET_COMMIT_DONE（这种情况理论上来说不可能出现）直接无视
+                        continue;
+                    } else {
+                        //响应结果为SET_COMMIT_DONE
+                        //只要有一个节点DONE了 说明最终结果是done 要做的只是等待所有响应结果都确定下来（要么done 要么挂掉）
+                        isDone = true;
+                        //取最后一个有效的respResponse
+                        standardResponse = respResponse;
+                    }
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            if (isDone) {
+                //SET commit指令执行成功 给客户端返回RESP响应SET成功的报文
+                writeBack(standardResponse);
+            } else {
+                //子节点全都挂掉了 这种情况实验没要求  不做任何处理
+
+            }
         }
-
-
         //释放线程池资源
         executor.shutdown();
-
     }
 
 
