@@ -175,6 +175,7 @@ public class RespParseUtil {
         }
 
         request.setRaw(respStr);
+        request.setTransactionNo(request.generateTransactionNo());  //生成一个事务号
         return request;
     }
 

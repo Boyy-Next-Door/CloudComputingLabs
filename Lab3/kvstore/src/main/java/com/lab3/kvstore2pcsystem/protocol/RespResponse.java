@@ -7,8 +7,9 @@ import java.util.ArrayList;
 public class RespResponse {
     //响应类型枚举
     public static int SET_OK = 201;           //SET成功
-    public static int GET_OK = 202;           //SET成功
-    public static int ERROR = 203;        //发生错误
+    public static int GET_OK = 202;           //GET成功
+    public static int DEL_OK = 202;           //GET成功
+    public static int ERROR = 203;            //发生错误
 
     private String raw;                         //响应报文字符串
     private int responseType;                   //响应类型

@@ -1,16 +1,23 @@
 package com.lab3.kvstore2pcsystem.coordinator;
 
+import com.alibaba.fastjson.JSON;
+import com.lab3.kvstore2pcsystem.Participant;
 import com.lab3.kvstore2pcsystem.protocol.RespRequest;
 import com.lab3.kvstore2pcsystem.protocol.RespResponse;
+import com.lab3.kvstore2pcsystem.utils.HttpClientUtils;
 import com.lab3.kvstore2pcsystem.utils.RespParseUtil;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 
 public class CoordinatorServer implements Runnable {
@@ -88,7 +95,7 @@ class ExecuteThread implements Runnable {
                 break;
             }
             RespRequest respRequest = RespParseUtil.parseRequest(readData);
-            System.out.println("试图从tcp连接中读取一个请求报文，解析结果："+respRequest);
+            System.out.println("试图从tcp连接中读取一个请求报文，解析结果：" + respRequest);
             // ip和端口号在客户端打包封装请求的时候获取不到 需要服务器端建立tcp连接后才能确定
             if (respRequest != null) {
                 System.out.println("request: " + respRequest);
@@ -96,12 +103,15 @@ class ExecuteThread implements Runnable {
                 switch (RespRequest.METHOD.enumOf(respRequest.getRequestType())) {
                     case SET:
                         //TODO 二阶段提交SET任务逻辑
+                        doSET(respRequest);
                         break;
                     case GET:
                         //TODO 二阶段提交GET任务逻辑
+                        doGET();
                         break;
                     case DEL:
                         //TODO 二阶段提交DEL任务逻辑
+                        doDEL();
                         break;
                     default: //说明RESP报文请求类型不支持或错误 不做任何响应
                 }
@@ -115,6 +125,43 @@ class ExecuteThread implements Runnable {
 //		ServerManager.getSM().userLogout(clientInfo);
 
     }
+
+    private void doDEL() {
+
+    }
+
+    private void doGET() {
+
+    }
+
+    private void doSET(RespRequest respRequest) {
+        //要向所有存活的参与者发送指令
+        ArrayList<Participant> participants = NodeManager.getAliveParticipantList();
+        //这里应该要开若干条线程  并行地通知所有参与者并等待其返回结果
+        ExecutorService executor = Executors.newCachedThreadPool();
+        ArrayList<FutureTask<RespResponse>> futures = new ArrayList<>();
+        for (Participant p : participants) {
+            FutureTask<RespResponse> futureTask = new FutureTask<RespResponse>(
+                    new RequestToPrepareRunner(p, respRequest, "SET", ""));
+            futures.add(futureTask);
+            executor.submit(futureTask);
+        }
+        executor.shutdown();
+
+        try {
+            //检查所有参与者的返回情况
+            for (FutureTask<RespResponse> futureTask : futures) {
+                if (futureTask.get() != null) {
+                    //TODO 检查prepare-request的响应结果
+                }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 
     private String readData() throws IOException, InterruptedException {
         // 封装数据源

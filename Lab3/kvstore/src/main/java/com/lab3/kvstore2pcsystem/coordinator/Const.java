@@ -8,6 +8,11 @@ public class Const {
 
     private static int port;
 
+    // 1、最近活跃时间早于30*1000毫秒 那么就认为数据节点掉线
+    // 2、每隔30秒检查一遍数据节点列表
+    public static int ALIVE_CHECK_INTERVAL = 30 * 1000;
+
+
     public static int getPort() {
         return port;
     }
@@ -16,4 +21,5 @@ public class Const {
     public void setPort(int port) {
         Const.port = port;
     }
+
 }

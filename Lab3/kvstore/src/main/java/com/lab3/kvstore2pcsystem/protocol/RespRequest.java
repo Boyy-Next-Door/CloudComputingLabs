@@ -1,6 +1,9 @@
 package com.lab3.kvstore2pcsystem.protocol;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 //RESP请求封装类
 public class RespRequest {
@@ -17,7 +20,8 @@ public class RespRequest {
     private int requestType;                  //请求类型
     private String method;                    //请求类型名
     private ArrayList<String> keys;           //keys
-    private ArrayList<String> values;                     //value
+    private ArrayList<String> values;         //value
+    private String transactionNo;                //事务编号
 
     public String getRaw() {
         return raw;
@@ -57,6 +61,14 @@ public class RespRequest {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public String getTransactionNo() {
+        return transactionNo;
+    }
+
+    public void setTransactionNo(String transactionNo) {
+        this.transactionNo = transactionNo;
     }
 
     public enum METHOD {
@@ -122,6 +134,16 @@ public class RespRequest {
                 ", method='" + method + '\'' +
                 ", keys=" + keys +
                 ", values=" + values +
+                ", transactionNo='" + transactionNo + '\'' +
                 '}';
+    }
+
+    //生成唯一事务号
+    public String generateTransactionNo() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date date = new Date();
+        String format = sdf.format(date);
+        Random random = new Random();
+        return format + random.nextInt(1000);
     }
 }
