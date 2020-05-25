@@ -64,7 +64,7 @@ public class CoordinatorServer implements Runnable {
 }
 
 /* 线程池中的具体任务线程类 */
-class ExecuteThread implements Runnable {
+class  ExecuteThread implements Runnable {
     private final Socket socket;
     private final String clientInfo;
     private final String clientIp;
