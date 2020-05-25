@@ -103,7 +103,7 @@ class  ExecuteThread implements Runnable {
                 // 根据request的具体类型 向controller分发任务
                 switch (RespRequest.METHOD.enumOf(respRequest.getRequestType())) {
                     case SET:
-                        //TODO 二阶段提交SET任务逻辑
+                        //二阶段提交SET任务逻辑
                         doSET(respRequest);
                         break;
                     case GET:
@@ -169,6 +169,10 @@ class  ExecuteThread implements Runnable {
     private void doSET(RespRequest respRequest) {
         //要向所有存活的参与者发送指令
         ArrayList<Participant> participants = NodeManager.getAliveParticipantList();
+        //数据节点死光了  直接返回ERROR
+        if (participants.size() == 0) {
+            writeBackError();
+        }
         //这里应该要开若干条线程  并行地通知所有参与者并等待其返回结果
         ExecutorService executor = Executors.newCachedThreadPool();
         ArrayList<FutureTask<RespResponse>> futures = new ArrayList<>();
@@ -231,8 +235,8 @@ class  ExecuteThread implements Runnable {
                 //SET回滚指令提交成功 给客户端返回RESP响应SET失败的报文
                 writeBack(standardResponse);
             } else {
-                //子节点全都挂掉了 这种情况实验没要求  不做任何处理
-
+                //子节点全都挂掉了直接返回ERROR
+                writeBackError();
             }
 
         } else {
@@ -271,8 +275,8 @@ class  ExecuteThread implements Runnable {
                 //SET commit指令执行成功 给客户端返回RESP响应SET成功的报文
                 writeBack(standardResponse);
             } else {
-                //子节点全都挂掉了 这种情况实验没要求  不做任何处理
-
+                //子节点全都挂掉了直接返回ERROR
+                writeBackError();
             }
         }
         //释放线程池资源
@@ -310,6 +314,20 @@ class  ExecuteThread implements Runnable {
             String s = RespParseUtil.parseResponse(respResponse);
             System.out.println("response to " + clientInfo + ": " + s);
             PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), true);
+            pWriter.println(s);
+            pWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 向客户端回写响应
+    private void writeBackError() {
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            String s = "-ERROR\r\n";
+            System.out.println("response to " + clientInfo + ": " + s);
+            PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
             pWriter.println(s);
             pWriter.flush();
         } catch (IOException e) {
