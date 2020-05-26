@@ -20,8 +20,8 @@ public class Const {
         return port;
     }
 
-    @Value("${tcpServer.port}")
-    public void setPort(int port) {
+    @Value("23333")
+    public static void setPort(int port) {
         Const.port = port;
     }
 

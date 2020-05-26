@@ -10,13 +10,16 @@ import java.util.TimerTask;
 public class HeartBeatRunner implements Runnable {
     @Override
     public void run() {
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             public void run() {
+
                 HashMap<String, String> stringStringHashMap = new HashMap<>();
                 stringStringHashMap.put("ip", Database.participant.getIp());
                 stringStringHashMap.put("port", Database.participant.getPort());
-                String s = HttpClientUtils.doPost("http://" + Database.participant.getCo_addr() + ":" + Database.participant.getCo_port() + "/coordinator/heartbeat", stringStringHashMap);
+
+                String s = HttpClientUtils.doPost("http://" + Database.participant.getCo_addr() + ":" + "8080" + "/coordinator/heartbeat", stringStringHashMap);
                 System.out.println("心跳结果:" + s);
             }
         }, 1000, Const.HEART_BEAT_INTERVAL);   //1秒后开始第一次心跳 之后每隔5秒一次

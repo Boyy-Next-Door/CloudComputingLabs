@@ -15,6 +15,7 @@ public class CoordinateController {
     //供数据节点调用的心跳接口
     @PostMapping(value = "heartbeat")
     String heartbeat(HttpServletRequest request) {
+
         //从request中获取参数
         Map<String, String[]> parameterMap = request.getParameterMap();
         String ip = parameterMap.get("ip")[0];      //数据节点ip

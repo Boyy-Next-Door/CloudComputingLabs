@@ -16,8 +16,8 @@ public class Const {
         return port;
     }
 
-    @Value("${server.port}")
-    public void setPort(int port) {
+    //@Value("${server.port}")
+    public static void setPort(int port) {
         Const.port = port;
     }
 
