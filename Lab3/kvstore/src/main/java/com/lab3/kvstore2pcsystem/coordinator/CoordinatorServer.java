@@ -64,7 +64,7 @@ public class CoordinatorServer implements Runnable {
 }
 
 /* 线程池中的具体任务线程类 */
-class  ExecuteThread implements Runnable {
+class ExecuteThread implements Runnable {
     private final Socket socket;
     private final String clientInfo;
     private final String clientIp;
@@ -108,11 +108,11 @@ class  ExecuteThread implements Runnable {
                         break;
                     case GET:
                         //TODO 二阶段提交GET任务逻辑
-                        doGET(respRequest);
+//                        doGET();
                         break;
                     case DEL:
                         //TODO 二阶段提交DEL任务逻辑
-                        doDEL(respRequest);
+                        doDEL();
                         break;
                     default: //说明RESP报文请求类型不支持或错误 不做任何响应
                 }
@@ -127,121 +127,14 @@ class  ExecuteThread implements Runnable {
 
     }
 
-    private void doDEL(RespRequest respRequest) {
-        ArrayList<Participant> participants = NodeManager.getAliveParticipantList();
-        if (participants.size() == 0) {
-            writeBackError();
-        }
-        ExecutorService executor = Executors.newCachedThreadPool();
-        ArrayList<FutureTask<RespResponse>> futures = new ArrayList<>();
-        for (Participant p : participants) {
-            FutureTask<RespResponse> futureTask = new FutureTask<RespResponse>(
-                    new RequestToPrepareRunner(p, respRequest, "DET", ""));
-            futures.add(futureTask);
-            executor.submit(futureTask);
-        }
-        boolean abort = false;
-        try {
-            //检查所有参与者的返回情况
-            for (FutureTask<RespResponse> futureTask : futures) {
-                RespResponse respResponse = futureTask.get();
-                // 检查prepare-request的响应结果
-                if (respResponse == null || respResponse.getResponseType() != RespResponse.DEL_OK) {
-                    //SET的响应结果不是OK或者数据节点挂了 那么Abort这次任务
-                    abort = true;
-                    break;
-                }
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+    private void doDEL() {
 
-        //发送commit指令
-        if (abort) {
-            //SET指令回滚
-            futures = new ArrayList<>();
-            for (Participant p : participants) {
-                FutureTask<RespResponse> futureTask = new FutureTask<RespResponse>(
-                        new RequestToPrepareRunner(p, respRequest, "ROLLBACK", ""));
-                futures.add(futureTask);
-                executor.submit(futureTask);
-            }
-
-            boolean isDone = false;
-            RespResponse standardResponse = null; //从下面任取一个有效的response作为所有节点同一的返回内容
-            try {
-                //检查所有参与者的返回情况
-                for (FutureTask<RespResponse> futureTask : futures) {
-                    RespResponse respResponse = futureTask.get();
-                    // 检查commit的响应结果
-                    if (respResponse == null || respResponse.getResponseType() != RespResponse.DEL_ROLLBACK_DONE) {
-                        //数据节点挂了 或者 响应状态不是SET_ROLLBACK_DONE（这种情况理论上来说不可能出现）直接无视
-                        continue;
-                    } else {
-                        //响应结果为SET_ROLLBACK_DONE
-                        //只要有一个节点DONE了 说明最终结果是done 要做的只是等待所有响应结果都确定下来（要么done 要么挂掉）
-                        isDone = true;
-                        //取最后一个有效的respResponse
-                        standardResponse = respResponse;
-                    }
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-
-            if (isDone) {
-                //SET回滚指令提交成功 给客户端返回RESP响应SET失败的报文
-                writeBack(standardResponse);
-            } else {
-                //子节点全都挂掉了直接返回ERROR
-                writeBackError();
-            }
-
-        } else {
-            //SET指令提交
-            futures = new ArrayList<>();
-            for (Participant p : participants) {
-                FutureTask<RespResponse> futureTask = new FutureTask<RespResponse>(
-                        new RequestToPrepareRunner(p, respRequest, "COMMIT", ""));
-                futures.add(futureTask);
-                executor.submit(futureTask);
-            }
-
-            boolean isDone = false;
-            RespResponse standardResponse = null; //从下面任取一个有效的response作为所有节点同一的返回内容
-            try {
-                //检查所有参与者的返回情况
-                for (FutureTask<RespResponse> futureTask : futures) {
-                    RespResponse respResponse = futureTask.get();
-                    // 检查commit的响应结果
-                    if (respResponse == null || respResponse.getResponseType() != RespResponse.SET_COMMIT_DONE) {
-                        continue;
-                    } else {
-                        //响应结果为SET_COMMIT_DONE
-                        //只要有一个节点DONE了 说明最终结果是done 要做的只是等待所有响应结果都确定下来（要么done 要么挂掉）
-                        isDone = true;
-                        //取最后一个有效的respResponse
-                        standardResponse = respResponse;
-                    }
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-
-            if (isDone) {
-                writeBack(standardResponse);
-            } else {
-                writeBackError();
-            }
-        }
-        //释放线程池资源
-        executor.shutdown();
     }
 
     private void doGET(RespRequest respRequest) {
         ArrayList<Participant> participants;
         //当list里还有节点存活时
-        while ((participants=NodeManager.getAliveParticipantList()).size()>0) {
+        while ((participants = NodeManager.getAliveParticipantList()).size() > 0) {
             int min = Integer.MAX_VALUE;
             Participant min_load_p = new Participant();
             for (Participant p : participants) {
@@ -256,7 +149,7 @@ class  ExecuteThread implements Runnable {
                 RespResponse respResponse = futureTask.get();
                 if (respResponse == null || respResponse.getResponseType() != RespResponse.GET_OK) {
                     //如果有问题，就换个节点，除非所有节点都挂了
-                    if(NodeManager.getAliveParticipantList().size()==0){
+                    if (NodeManager.getAliveParticipantList().size() == 0) {
                         writeBack(respResponse);
                         break;
                     }
