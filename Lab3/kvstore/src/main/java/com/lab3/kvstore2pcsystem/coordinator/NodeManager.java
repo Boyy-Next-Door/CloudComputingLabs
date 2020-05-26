@@ -12,21 +12,9 @@ import java.util.Map;
 //参与者节点管理中心
 @Component
 public class NodeManager {
-    public static HashMap<Participant, Date> participants = new HashMap<Participant, Date>();
-    public static void initMap(){
-        Participant p=new Participant();
-        p.setIp("localhost");
-        p.setPort("8088");//参与者
-        Date d=new Date();
-        if(participants.size()==0){
-            participants.put(p,d);
-        }
-
-    }
+    public static HashMap<Participant, Date> participants=new HashMap<>();
     //获取当前存活的参与者列表
     public static ArrayList<Participant> getAliveParticipantList() {
-        //仅供展示！！！！
-        initMap();
         ArrayList<Participant> aliveParticipants = new ArrayList<Participant>();
        // System.out.println("in getAliveP  participants entrySet数目为"+participants.entrySet().size());
         for (Map.Entry<Participant, Date> entry : participants.entrySet()) {
@@ -47,8 +35,6 @@ public class NodeManager {
 
     //刷新数据节点的活跃时间
     public static int refreshAliveNode(String ip, String port) {
-        //================
-        initMap();
 
         for (Map.Entry<Participant, Date> entry : participants.entrySet()) {
             Participant key = entry.getKey();//System.out.println("in refresh"+key.getCo_addr());
