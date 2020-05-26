@@ -13,7 +13,7 @@ public class Participant {
     private String port;//参与者端口
     private HashMap<String, RespRequest> map;        //内存数据库    <key，RespRequest>
     private HashMap<String, RespRequest> buffer;     //缓冲区    <transactionNo，RespRequest>
-    private Stack<String> log;                  //日志
+    private Stack<String> log;                       //日志
 
     public Participant() {
         this.map=new HashMap<>();

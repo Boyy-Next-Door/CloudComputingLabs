@@ -1,10 +1,21 @@
 package com.lab3.kvstoreparticipant.utils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Config {
+
+    private static Config config;
+
+    private Config() {
+    }
+
+    public static Config getInstance() {
+        return config == null ? new Config() : config;
+    }
 
     private String coIP;//协调者IP
 
@@ -47,14 +58,15 @@ public class Config {
     //=======================
     private String parIP;//初始化参与者时，也需要给出参与者IP和PORT
     private int parPORT;
+
     public void Config_intepret(String fileName) throws IOException {
-        File file =new File(fileName);
-        if(file.exists()){
-            BufferedReader reader=new BufferedReader(new FileReader(file));
-            String str=new String();
-            while((str=reader.readLine())!=null){
-                if(str.charAt(0) != '!'){
-                    if(str.matches("^mode.+$")) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String str = new String();
+            while ((str = reader.readLine()) != null) {
+                if (str.charAt(0) != '!') {
+                    if (str.matches("^mode.+$")) {
                         if (str.indexOf("coordinator") != -1) {
                             initCO(file);
                             return;
@@ -65,25 +77,25 @@ public class Config {
                     }
                 }
             }
-        }
-        else System.out.println("no such file");
+        } else System.out.println("no such file");
     }
+
     public void initCO(File file) throws IOException {
-        coIP=new String();
-        paIP=new ArrayList<>();
-        paPORT=new ArrayList<>();
-        int cnt=0;
-        String str=new String();
-        BufferedReader reader=new BufferedReader(new FileReader(file));
-        while((str=reader.readLine())!=null) {
+        coIP = new String();
+        paIP = new ArrayList<>();
+        paPORT = new ArrayList<>();
+        int cnt = 0;
+        String str = new String();
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        while ((str = reader.readLine()) != null) {
             if (str.indexOf("coordinator_info") != -1) {
-                String addr = str.substring(str.indexOf(' ')+1);
+                String addr = str.substring(str.indexOf(' ') + 1);
                 String[] split = addr.split(":");
                 coIP = split[0];
                 coPORT = new Integer(split[1]);
                 //System.out.println(addr);
             } else if (str.indexOf("participant_info") != -1) {
-                String addr = str.substring(str.indexOf(' ')+1);
+                String addr = str.substring(str.indexOf(' ') + 1);
                 String[] split = addr.split(":");
                 paIP.add(split[0]);
                 paPORT.add(split[1]);
@@ -92,20 +104,20 @@ public class Config {
             }
         }
     }
+
     public void initPA(File file) throws IOException {
-        parIP=new String();
-        String str=new String();
-        BufferedReader reader=new BufferedReader(new FileReader(file));
-        while((str=reader.readLine())!=null) {
+        parIP = new String();
+        String str = new String();
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        while ((str = reader.readLine()) != null) {
             if (str.indexOf("coordinator_info") != -1) {
-                String addr = str.substring(str.indexOf(' ')+1);
+                String addr = str.substring(str.indexOf(' ') + 1);
                 String[] split = addr.split(":");
                 coIP = split[0];
                 coPORT = new Integer(split[1]);
                 // System.out.println(addr);
-            }
-            else if (str.indexOf("participant_info") != -1) {
-                String addr = str.substring(str.indexOf(' ')+1);
+            } else if (str.indexOf("participant_info") != -1) {
+                String addr = str.substring(str.indexOf(' ') + 1);
                 String[] split = addr.split(":");
                 parIP = split[0];
                 parPORT = new Integer(split[1]);
@@ -113,8 +125,9 @@ public class Config {
             }
         }
     }
+
     public static void main(String[] args) throws IOException {
-        Config config=new Config();
+        Config config = new Config();
         config.Config_intepret("F:/2020云计算/George/Lab3/kvstore/src/main/resources/coordinator.conf");
     }
 }

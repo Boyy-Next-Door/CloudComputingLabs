@@ -1,5 +1,4 @@
 package com.lab3.kvstoreparticipant.utils;
-
 import com.lab3.kvstoreparticipant.protocol.RespRequest;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
