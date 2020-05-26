@@ -13,13 +13,29 @@ import java.util.Map;
 @Component
 public class NodeManager {
     public static HashMap<Participant, Date> participants = new HashMap<Participant, Date>();
+    public static void initMap(){
+        Participant p=new Participant();
+        p.setIp("localhost");
+        p.setPort("8088");//参与者
+        Date d=new Date();
+        if(participants.size()==0){
+            participants.put(p,d);
+        }
+
+    }
     //获取当前存活的参与者列表
     public static ArrayList<Participant> getAliveParticipantList() {
+        //仅供展示！！！！
+        initMap();
         ArrayList<Participant> aliveParticipants = new ArrayList<Participant>();
+       // System.out.println("in getAliveP  participants entrySet数目为"+participants.entrySet().size());
         for (Map.Entry<Participant, Date> entry : participants.entrySet()) {
             //数据节点存活
-            if (new Date().getTime() - entry.getValue().getTime() < Const.ALIVE_CHECK_INTERVAL) {
+            if (entry!=null&&new Date().getTime() - entry.getValue().getTime() < Const.ALIVE_CHECK_INTERVAL) {
                 aliveParticipants.add(entry.getKey());
+            }
+            else if(entry==null){
+                continue;
             }
             //数据节点心跳不及时  认为已经掉线 删除
             else {
@@ -31,9 +47,13 @@ public class NodeManager {
 
     //刷新数据节点的活跃时间
     public static int refreshAliveNode(String ip, String port) {
+        //================
+        initMap();
+
         for (Map.Entry<Participant, Date> entry : participants.entrySet()) {
-            Participant key = entry.getKey();
-            if (key.getCo_addr().equals(ip) && key.getPort().equals(port)) {
+            Participant key = entry.getKey();//System.out.println("in refresh"+key.getCo_addr());
+            if (key.getIp().equals(ip) && key.getPort().equals(port)) {
+
                 entry.setValue(new Date());
                 return 1;
             }

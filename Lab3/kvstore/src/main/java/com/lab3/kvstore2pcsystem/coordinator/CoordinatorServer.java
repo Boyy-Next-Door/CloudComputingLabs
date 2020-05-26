@@ -94,10 +94,10 @@ class ExecuteThread implements Runnable {
                 break;
             }
             RespRequest respRequest = RespParseUtil.parseRequest(readData);
-            System.out.println("试图从tcp连接中读取一个请求报文，解析结果：" + respRequest);
+            //System.out.println("试图从tcp连接中读取一个请求报文，解析结果：" + respRequest);
             // ip和端口号在客户端打包封装请求的时候获取不到 需要服务器端建立tcp连接后才能确定
             if (respRequest != null) {
-                System.out.println("request: " + respRequest);
+                //System.out.println("request: " + respRequest);
                 // 根据request的具体类型 向controller分发任务
                 switch (RespRequest.METHOD.enumOf(respRequest.getRequestType())) {
                     case SET:
@@ -243,7 +243,9 @@ class ExecuteThread implements Runnable {
     }
 
     private void doGET(RespRequest respRequest) {
+
         ArrayList<Participant> participants;
+        ExecutorService executor = Executors.newCachedThreadPool();
         //当list里还有节点存活时
         while ((participants = NodeManager.getAliveParticipantList()).size() > 0) {
             int min = Integer.MAX_VALUE;
@@ -256,25 +258,28 @@ class ExecuteThread implements Runnable {
             }
             FutureTask<RespResponse> futureTask = new FutureTask<RespResponse>(
                     new RequestToPrepareRunner(min_load_p, respRequest, "GET", ""));
+            executor.submit(futureTask);
             try {
                 RespResponse respResponse = futureTask.get();
+                System.out.println("doGET!!!!!!!!!!!"+respResponse.getValue().get(0));
                 if (respResponse == null || respResponse.getResponseType() != RespResponse.GET_OK) {
                     //如果有问题，就换个节点，除非所有节点都挂了
                     if (NodeManager.getAliveParticipantList().size() == 0) {
-                        writeBack(respResponse);
                         break;
                     }
                     continue;
                 }
                 //发送成功信息
+                //System.out.println("in CS doGET  response is "+respResponse.getValue().get(0));
                 writeBack(respResponse);
-                break;
+                return;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
         }
+        writeBackError();
     }
 
     private void doSET(RespRequest respRequest) {

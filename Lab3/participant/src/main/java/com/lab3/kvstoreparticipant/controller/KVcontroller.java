@@ -8,6 +8,7 @@ import com.lab3.kvstoreparticipant.protocol.RespResponse;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
 import java.util.Map;
 
 @RestController
@@ -37,7 +38,9 @@ public class KVcontroller {
             respResponse.setResponseType(RespResponse.ERROR);
             return respResponse;
         }
-        return Database.GET(jsonObject.toJavaObject(RespRequest.class));
+        RespResponse r=Database.GET(jsonObject.toJavaObject(RespRequest.class));
+        //System.out.println("in KVC r is =="+r.getValues().get(0));
+        return r;
     }
 
     @PostMapping(value = "del")
@@ -73,7 +76,7 @@ public class KVcontroller {
 
     @PostMapping(value = "commit")
     RespResponse commit(@RequestBody JSONObject jsonObject) {
-        System.out.println("访问del接口");
+        System.out.println("访问commit接口");
         RespRequest respRequest = jsonObject.toJavaObject(RespRequest.class);
         if (respRequest.getRequestType() == RespRequest.SET) {
             //SET提交

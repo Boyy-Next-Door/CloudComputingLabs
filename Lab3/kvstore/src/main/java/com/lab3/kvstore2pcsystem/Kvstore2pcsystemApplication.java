@@ -14,6 +14,7 @@ public class Kvstore2pcsystemApplication {
         new CoordinatorServer().run();
         //开启数据节点活跃检测线程
         new CheckNodeAliveRunner().run();
+        //Client client=new Client();
     }
 
 }

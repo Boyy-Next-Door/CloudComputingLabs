@@ -85,10 +85,13 @@ public class Database {
         //没有找到指定key
         if(record==null){
             //values是一个空的集合
+            //System.out.println("in Database GET value is null");
             respResponse.setValues(new ArrayList<String>());
         }else{
            //找到了key对应的value
+
             respResponse.setValues(record.getValues());
+            System.out.println("in Database GET2 is not null=="+respResponse.getValues().get(0));
         }
 
         return respResponse;

@@ -203,7 +203,7 @@ public class RespParseUtil {
             case RespResponse.GET_OK: {
                 ArrayList<String> values = respResponse.getValue();
                 //查询的key不存在 返回 "*1\r\n$3\r\nnil\r\n"
-                if (values.size() <= 0) {
+                if (values==null||values.size() <= 0) {
                     raw.append("*1\r\n$3\r\nnil\r\n");
                 } else {
                     //拼接响应value

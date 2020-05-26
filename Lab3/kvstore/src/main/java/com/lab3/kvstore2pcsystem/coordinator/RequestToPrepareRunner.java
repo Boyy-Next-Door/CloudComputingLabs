@@ -41,6 +41,7 @@ public class RequestToPrepareRunner implements Callable<RespResponse> {
         switch (command) {
             case "SET": {
                 s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + participant.getPort() + "/kvstore/set", json);
+                System.out.println("协调者调用参与者接口=="+participant.getIp()+" + "+participant.getPort());
                 break;
             }
             case "GET": {
