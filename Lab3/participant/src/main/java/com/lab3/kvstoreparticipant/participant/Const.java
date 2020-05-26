@@ -2,10 +2,9 @@ package com.lab3.kvstoreparticipant.participant;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
+import java.lang.Object.*;
 @Component
 public class Const {
-
     private static int port;
 
     //  每隔5秒调用一次心跳接口
