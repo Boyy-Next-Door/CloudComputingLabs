@@ -16,15 +16,16 @@ public class KvstoreParticipantApplication {
 
         SpringApplication.run(KvstoreParticipantApplication.class, args);
         Config config=new Config();
-        config.Config_intepret(args[0]);
+        config.Config_intepret(args[1]);
         //初始化Database的信息
         Database.participant.setCo_addr(config.getCoIP());
         System.out.println("COIP is "+config.getCoIP());
         Database.participant.setCo_port(String.valueOf(config.getCoPORT()));
-        System.out.println("CO PORT is "+config.getCoPORT());
+        System.out.println("CO PORT is=="+config.getCoPORT());
         Database.participant.setIp(config.getParIP());
-        System.out.println("my IP is "+config.getParIP());
+
         Database.participant.setPort(String.valueOf(config.getParPORT()));
+        System.out.println("my PORT is=="+Database.participant.getPort());
         new HeartBeatRunner().run();
     }
 

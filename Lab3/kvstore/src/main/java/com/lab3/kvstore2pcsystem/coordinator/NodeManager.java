@@ -35,11 +35,10 @@ public class NodeManager {
 
     //刷新数据节点的活跃时间
     public static int refreshAliveNode(String ip, String port) {
-
         for (Map.Entry<Participant, Date> entry : participants.entrySet()) {
             Participant key = entry.getKey();//System.out.println("in refresh"+key.getCo_addr());
-            if (key.getIp().equals(ip) && key.getPort().equals(port)) {
 
+            if (key.getIp().equals(ip) && key.getPort().equals(port)) {
                 entry.setValue(new Date());
                 return 1;
             }

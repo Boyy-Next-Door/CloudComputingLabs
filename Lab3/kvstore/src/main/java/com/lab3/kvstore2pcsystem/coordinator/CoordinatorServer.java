@@ -261,7 +261,7 @@ class ExecuteThread implements Runnable {
             executor.submit(futureTask);
             try {
                 RespResponse respResponse = futureTask.get();
-                System.out.println("doGET!!!!" + respResponse.getValues().get(0));
+                //System.out.println("doGET!!!!" + respResponse.getValues().get(0));
                 if (respResponse == null || respResponse.getResponseType() != RespResponse.GET_OK) {
                     //如果有问题，就换个节点，除非所有节点都挂了
                     if (NodeManager.getAliveParticipantList().size() == 0) {

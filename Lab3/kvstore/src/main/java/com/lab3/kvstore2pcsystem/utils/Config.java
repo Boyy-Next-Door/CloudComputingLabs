@@ -77,13 +77,13 @@ public class Config {
         BufferedReader reader=new BufferedReader(new FileReader(file));
         while((str=reader.readLine())!=null) {
             if (str.indexOf("coordinator_info") != -1) {
-                String addr = str.substring(str.indexOf(' '));
+                String addr = str.substring(str.indexOf(' ')+1);
                 String[] split = addr.split(":");
                 coIP = split[0];
                 coPORT = new Integer(split[1]);
                 //System.out.println(addr);
             } else if (str.indexOf("participant_info") != -1) {
-                String addr = str.substring(str.indexOf(' '));
+                String addr = str.substring(str.indexOf(' ')+1);
                 String[] split = addr.split(":");
                 paIP.add(split[0]);
                 paPORT.add(split[1]);
@@ -98,14 +98,14 @@ public class Config {
         BufferedReader reader=new BufferedReader(new FileReader(file));
         while((str=reader.readLine())!=null) {
             if (str.indexOf("coordinator_info") != -1) {
-                String addr = str.substring(str.indexOf(' '));
+                String addr = str.substring(str.indexOf(' ')+1);
                 String[] split = addr.split(":");
                 coIP = split[0];
                 coPORT = new Integer(split[1]);
                 // System.out.println(addr);
             }
             else if (str.indexOf("participant_info") != -1) {
-                String addr = str.substring(str.indexOf(' '));
+                String addr = str.substring(str.indexOf(' ')+1);
                 String[] split = addr.split(":");
                 parIP = split[0];
                 parPORT = new Integer(split[1]);

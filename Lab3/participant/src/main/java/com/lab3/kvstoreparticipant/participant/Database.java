@@ -38,6 +38,7 @@ public class Database {
 
         //将缓冲区内容修改到数据库 并清除缓冲区该条记录
         RespRequest remove = participant.getBuffer().remove(respRequest.getTransactionNo());
+
         participant.getMap().put(remove.getKeys().get(0),respRequest);
 
         //封装response
@@ -89,7 +90,6 @@ public class Database {
             respResponse.setValues(new ArrayList<String>());
         }else{
            //找到了key对应的value
-
             respResponse.setValues(record.getValues());
 //            System.out.println("in Database GET2 is not null=="+respResponse.getValues().get(0));
         }

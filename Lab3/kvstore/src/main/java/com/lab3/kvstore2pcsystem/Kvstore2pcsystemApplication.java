@@ -21,17 +21,17 @@ public class Kvstore2pcsystemApplication {
         //System.out.println(args[0]);
         Config config=new Config();
         //设置CO的port
-        config.Config_intepret(args[0]);
+        config.Config_intepret(args[1]);
         Const.setPort(config.getCoPORT());
        // System.out.println(config.getCoPORT());
-        Participant p=new Participant();
+
         //设置参与者MAP
         System.out.println("size is"+config.paIP.size());
         for(int i=0;i<config.paIP.size();++i){
-
+            Participant p=new Participant();
             p.setIp(config.paIP.get(i));
             p.setPort(config.paPORT.get(i));
-            System.out.println("ip+port is "+p.getIp()+":"+p.getPort());
+            System.out.println("ip+port is=="+p.getIp()+":"+p.getPort());
             NodeManager.participants.put(p,new Date());
         }
 
@@ -39,17 +39,6 @@ public class Kvstore2pcsystemApplication {
         new CoordinatorServer().run();
         //开启数据节点活跃检测线程
         new CheckNodeAliveRunner().run();
-        //Client client=new Client();
     }
 
 }
-//    public static void initMap(){
-//        Participant p=new Participant();
-//        p.setIp("localhost");
-//        p.setPort("8088");//参与者
-//        Date d=new Date();
-//        if(participants.size()==0){
-//            participants.put(p,d);
-//        }
-//
-//    }

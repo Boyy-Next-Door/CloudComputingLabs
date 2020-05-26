@@ -40,24 +40,24 @@ public class RequestToPrepareRunner implements Callable<RespResponse> {
         String json = JSON.toJSONString(respRequest);
         switch (command) {
             case "SET": {
-                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + participant.getPort() + "/kvstore/set", json);
+                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + "8088" + "/kvstore/set", json);
                 System.out.println("协调者调用参与者接口=="+participant.getIp()+" + "+participant.getPort());
                 break;
             }
             case "GET": {
-                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + participant.getPort() + "/kvstore/get", json);
+                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + "8088"  + "/kvstore/get", json);
                 break;
             }
             case "DEL": {
-                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + participant.getPort() + "/kvstore/del", json);
+                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + "8088"  + "/kvstore/del", json);
                 break;
             }
             case "COMMIT": {
-                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + participant.getPort() + "/kvstore/commit", json);
+                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + "8088"  + "/kvstore/commit", json);
                 break;
             }
             case "ROLLBACK": {
-                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + participant.getPort() + "/kvstore/rollback", json);
+                s = HttpClientUtils.HttpPostWithJson("http://" + participant.getIp() + ":" + "8088"  + "/kvstore/rollback", json);
                 break;
             }
             default:
