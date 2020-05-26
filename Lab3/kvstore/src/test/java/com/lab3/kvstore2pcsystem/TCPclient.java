@@ -14,18 +14,18 @@ public class TCPclient {
 		s.connect(new InetSocketAddress("localhost",23333));
 		System.out.println("本机: "+s.getLocalAddress().getHostAddress()+": "+s.getLocalPort());
 		System.out.println("服务器："+s.getRemoteSocketAddress());
-		
+
 //		System.out.println("input the text you want to send:");
 //		Scanner scanner = new Scanner(System.in);
 //		String nextLine = scanner.nextLine();
-		
+
 		//获取输出流
 		OutputStream os = s.getOutputStream();
-		
+
 		//输出数据
 //		os.write(nextLine.getBytes());
+//		os.write("*4\r\n$3\r\nSET\r\n$7\r\nCS06142\r\n$5\r\nCloud\r\n$9\r\nComputing\r\n".getBytes());
 		os.write("*2\r\n$3\r\nGET\r\n$7\r\nCS06142\r\n".getBytes());
-		//os.write("*4\r\n$3\r\nSET\r\n$7\r\nCS06142\r\n$5\r\nCloud\r\n$9\r\nComputing\r\n".getBytes());
 		//释放资源
 		os.close();
 		s.close();

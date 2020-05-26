@@ -1,6 +1,5 @@
 package com.lab3.kvstore2pcsystem.protocol;
 
-
 import java.util.ArrayList;
 
 //RESP响应封装类
@@ -18,7 +17,7 @@ public class RespResponse {
     private String raw;                         //响应报文字符串
     private int responseType;                   //响应类型
     private ArrayList<String> keys;             //keys
-    private ArrayList<String> value;            //value
+    private ArrayList<String> values;            //value
     private int keysRemoved;                    //DEL请求时删除的key数量
 
 
@@ -46,12 +45,12 @@ public class RespResponse {
         this.keys = keys;
     }
 
-    public ArrayList<String> getValue() {
-        return value;
+    public ArrayList<String> getValues() {
+        return values;
     }
 
-    public void setValue(ArrayList<String> value) {
-        this.value = value;
+    public void setValues(ArrayList<String> values) {
+        this.values = values;
     }
 
     public int getKeysRemoved() {
@@ -68,7 +67,7 @@ public class RespResponse {
                 "row='" + raw + '\'' +
                 ", responseType=" + responseType +
                 ", keys=" + keys +
-                ", value=" + value +
+                ", value=" + values +
                 ", keysRemoved=" + keysRemoved +
                 '}';
     }

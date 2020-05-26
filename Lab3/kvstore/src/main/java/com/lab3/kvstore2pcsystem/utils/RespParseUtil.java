@@ -17,7 +17,7 @@ public class RespParseUtil {
         ArrayList<String> list = new ArrayList<>();
         list.add("湖南大学");
         list.add("计算机科学与技术");
-        respResponse.setValue(list);
+        respResponse.setValues(list);
         System.out.println(parseResponse(respResponse));
 
 //        String s="湖南大学";
@@ -201,7 +201,7 @@ public class RespParseUtil {
         switch (respResponse.getResponseType()) {
             //GET第一阶段响应成功
             case RespResponse.GET_OK: {
-                ArrayList<String> values = respResponse.getValue();
+                ArrayList<String> values = respResponse.getValues();
                 //查询的key不存在 返回 "*1\r\n$3\r\nnil\r\n"
                 if (values==null||values.size() <= 0) {
                     raw.append("*1\r\n$3\r\nnil\r\n");
