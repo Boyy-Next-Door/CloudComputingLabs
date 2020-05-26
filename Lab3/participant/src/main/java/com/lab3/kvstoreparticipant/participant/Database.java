@@ -91,7 +91,7 @@ public class Database {
            //找到了key对应的value
 
             respResponse.setValues(record.getValues());
-            System.out.println("in Database GET2 is not null=="+respResponse.getValues().get(0));
+//            System.out.println("in Database GET2 is not null=="+respResponse.getValues().get(0));
         }
 
         return respResponse;

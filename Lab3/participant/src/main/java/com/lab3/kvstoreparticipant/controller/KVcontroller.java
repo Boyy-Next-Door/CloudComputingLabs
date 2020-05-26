@@ -39,7 +39,8 @@ public class KVcontroller {
             return respResponse;
         }
         RespResponse r=Database.GET(jsonObject.toJavaObject(RespRequest.class));
-        //System.out.println("in KVC r is =="+r.getValues().get(0));
+//        System.out.println("in KVC r is =="+r.getValues().get(0));
+//        System.out.println(JSON.toJSONString(r));
         return r;
     }
 
